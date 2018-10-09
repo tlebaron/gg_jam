@@ -1,0 +1,15 @@
+import sys
+assert len(sys.argv) == 2, "three arguments needed: name of the script, input file"
+i = open(str(sys.argv[1]))
+o = open("out_"+str(sys.argv[1]),"w")
+
+nb_tests = int(i.readline())
+
+for test in range(0, nb_tests):
+
+
+
+    o.write("Case #{0}: {1}\n".format(test+1, -1))
+
+i.close()
+o.close()
