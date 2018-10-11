@@ -5,12 +5,22 @@ o = open("out_"+str(sys.argv[1]),"w")
 
 nb_tests = int(i.readline())
 
+def use_train(i, available, added):
+    assert i == 1 or i == 0
+    if available[i] == 0:
+	print "train added at {0}".format(i)
+	added[i] += 1
+    else:
+	available[i] -= 1
+
+def print_time(t):
+    print "{0}:{1}".format(t/60, t%60)
+
 for test in range(0, nb_tests):
-    startA = 0
-    startB = 0
-    #trips[0] are from A to B, [1] form B to A, [2] all
-    #each is a list of [departure hour, dep min, arrival hour, arr min]
-    trips = [[],[],[]]
+    nb_train_add = [0,0]
+    nb_train_av = [0,0]
+    #0: departure from A, 1: departure from B, 2: arrival to B, 3: arrival to A
+    trips = [[],[],[],[]]
     #instead of testing all minutes, just record interesting time
     time = []
     turn_time = int(i.readline())
@@ -24,40 +34,40 @@ for test in range(0, nb_tests):
 	    # just add turn time to record ready time instead of arrival time, useless
 	    trip[1] = trip[1] + turn_time
 
-	    trips[index].append(trip)
-	    trips[2].append(trip)
+	    trips[index].append(trip[0])
+	    trips[index+2].append(trip[1])
 
-	    if trip[0] not in time:
-		time.append(trip[0])
-	    if trip[1] not in time:
-		time.append(trip[1])
+	    time.append(trip[0])
+	    time.append(trip[1])
 
-    trips[2].sort()
     time.sort()
-
-    d_A = False
-    d_B = False
-    a_A = False
-    a_B = False
+    print trips
 
     for t in time:
+	print_time(t)
+	if t in trips[3]:
+	    print "train arrive in A"
+	    trips[3].remove(t)
+	    nb_train_av[0] += 1
+	    continue
+	if t in trips[2]:
+	    print "train arrive in B"
+	    trips[2].remove(t)
+	    nb_train_av[1] += 1
+	    continue
+	if t in trips[0]:
+	    print "train start from A"
+	    trips[0].remove(t)
+	    use_train(0, nb_train_av, nb_train_add)
+	    continue
+	if t in trips[1]:
+	    print "train start from B"
+	    trips[1].remove(t)
+	    use_train(1, nb_train_av, nb_train_add)
+	    continue
+	assert False
 
-	#start with arrivals
-	for Atrips in trips[1]:
-	    if t == ### looks weird, sure there is a better method...
-
-    
-
-    for trip in trips[2]:
-	if trip in trips[0]:
-	    departure = "A"
-	else:
-	    departure = "B"
-	
-
-    print test, turn_time, [nb_trips_AB, nb_trips_BA], trips[2], time
-
-    o.write("Case #{0}: {1}\n".format(test+1, -1))
+    o.write("Case #{0}: {1} {2}\n".format(test+1, nb_train_add[0], nb_train_add[1]))
 
 i.close()
 o.close()
