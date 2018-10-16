@@ -2,13 +2,14 @@ import sys
 import random
 import math
 
-SAMPLE = pow(10,3)
+SAMPLE = pow(10,4)
 
 assert len(sys.argv) == 2, "three arguments needed: name of the script, input file"
 i = open(str(sys.argv[1]))
 o = open("out_"+str(sys.argv[1]),"w")
 
 nb_tests = int(i.readline())
+
 
 
 def touches_ring(R, t, f, xf, yf):
@@ -28,17 +29,24 @@ def per_av_string(t,r,g,R,f, test, nb_tests):
     inner_r = R-t-f
     inner_cycle = math.pi*pow(inner_r, 2)
 
-    # cut the innercycle in 10^6 * 10^6 cases, check the middle of the case if on a string
+    # cut the innercycle quarter in 10^6 * 10^6 cases, check the bottom left corner of the case if on a string
     touch = 0
-    for i in range(0, SAMPLE):
-	for j in range(0, SAMPLE):
+    count = 0
+    for i in range(0, SAMPLE): #row
+	for j in range(0, SAMPLE): #column
 	    sys.stderr.write("\r{1}/{2} : {0}%".format(100*float(i*SAMPLE+j)/pow(SAMPLE,2), test+1, nb_tests))
-	    x = inner_r*float(i)/SAMPLE
-	    y = inner_r*float(j)/SAMPLE
+	    y = inner_r*float(i)/SAMPLE
+	    x = inner_r*float(j)/SAMPLE
+	    # in out of the inner_cycle, jump to next row
+	    if (pow(x,2)+pow(y,2))>pow(inner_r,2):
+		break
+	    count += 1
 	    if touches_string(r, g, f, x, y):
 		touch += 1
 
-    return inner_r*(1-touch/pow(SAMPLE,2))
+    
+
+    return math.pi*inner_r*inner_r*(1-float(touch)/count)
 
 def generate_rand_f(R, t):
     return [(R-t)*random.random(), (R-t)*random.random()]
@@ -56,3 +64,4 @@ for test in range(0, nb_tests):
 
 i.close()
 o.close()
+
