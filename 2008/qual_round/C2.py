@@ -2,7 +2,7 @@ import sys
 import random
 import math
 
-SAMPLE = pow(10,5)
+SAMPLE = pow(10,6)
 
 assert len(sys.argv) == 2, "three arguments needed: name of the script, input file"
 i = open(str(sys.argv[1]))
@@ -48,17 +48,41 @@ def per_av_string(t,r,g,R,f, test, nb_tests):
 
     return math.pi*inner_r*inner_r*(1-float(touch)/count)
 
-def generate_rand_f(R, t):
-    return [(R-t)*random.random(), (R-t)*random.random()]
+def generate_rand_f(R):
+    [x,y] = [R,R]
+    while (pow(x,2)+pow(y,2))>pow(R,2):
+	[x,y] = [(R)*random.random(), (R)*random.random()]
+    return [x,y]
+
+def touches_racq(x, y, params):
+    R = params[1]
+    t = params[2]
+    f = params[0]
+    return x>(R-t-f) or y>(R-t-f)
+
+def touches_string(x, y, params):
+    f = params[0]
+    r = params[3]
+    g = params[4]
+    r_x = x%(g+2*r)
+    r_y = y%(g+2*r)
+    return r_x<(r+f) or r_x>(g+2*r-f) or r_y<(r+f) or r_y>(g+2*r-f)
+
+def does_touch(x,y,params):
+    return touches_string(x, y, params) or touches_racq(x, y, params)
 
 for test in range(0, nb_tests):
 
 #f, R, t, r, g
     params = [float(x) for x in i.readline().split(" ")]
 
-    # perc touching = 1- perc not touching
-    # perc not touching = per available area around string in the cicle which touch the racquet / external area of racq
-    perc_touch = 1 - (per_av_string(params[2], params[3], params[4], params[1], params[0], test, nb_tests)/(math.pi*params[1]*params[1]))
+    touches = 0
+    for counter in range(0, SAMPLE):
+        sys.stderr.write("\r{0}/{1} done at {2}%".format(test+1, nb_tests, 100*float(counter)/SAMPLE))
+	[x,y] = generate_rand_f(params[1])
+	if does_touch(x, y, params):
+	    touches += 1
+    perc_touch = float(touches)/SAMPLE
 
     o.write("Case #{0}: {1}\n".format(test+1, perc_touch))
 

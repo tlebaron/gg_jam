@@ -4,3 +4,22 @@
 0.00001 10000 0.00001 0.00001 1000
 0.4 10000 0.00001 0.00001 700
 1 100 1 1 10
+
+
+\begin{table*}[t]
+\caption{Resuts of the brute-force optimization}
+\label{table:bfopti}
+\scriptsize
+\setlength\tabcolsep{11pt}
+\centering\begin{tabularx}{\textwidth}{l g c c c c c c}
+        \toprule
+        & \heading{Probability of unreachability}
+        & \heading{Schedulability}
+        & \heading{Overhead}
+        \midrule
+        \emph{P} = 0.25 & 88\% & 12\%\\
+        \emph{P} = 0.50 & 91\% & 8\%\\
+        \emph{P} = 0.75 & 95\% & 4\%\\
+	\bottomrule
+    \end{tabularx}
+\end{table*}
